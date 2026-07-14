@@ -1047,218 +1047,157 @@
       PublicEvent: '🎉', GollumEvent: '📖',
     };
 
+    // ===== RENDER HELPERS =====
+    function makeProjectCard(r) {
+      const topics = (r.topics || []).slice(0, 4);
+      const tags = r.language ? [r.language, ...topics].slice(0, 4) : topics.slice(0, 3);
+      const iconUrl = getDeviconUrl(r.language);
+      const card = document.createElement('div');
+      card.className = 'project-card glass gradient-border';
+      card.innerHTML = `
+        <div class="content">
+          <div class="thumb">
+            ${iconUrl ? `<img class="lang-icon" src="${iconUrl}" alt="${r.language}" loading="lazy" />` : getEmoji(r.language)}
+            ${r.stargazers_count > 0 ? `<span class="star-badge">⭐ ${r.stargazers_count}</span>` : ''}
+            ${r.forks_count > 0 ? `<span class="star-badge" style="right:${r.stargazers_count > 0 ? '85px' : '12px'}">⑂ ${r.forks_count}</span>` : ''}
+          </div>
+          <h3>${r.name}</h3>
+          <p>${r.description || 'No description provided.'}</p>
+          <div class="project-tags">
+            ${tags.map(t => `<span>${t}</span>`).join('')}
+          </div>
+          <div class="project-links">
+            <a href="${r.html_url}" target="_blank">View on GitHub →</a>
+            ${r.homepage ? `<a href="${r.homepage}" target="_blank">Live Demo →</a>` : ''}
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    function makeActivityItem(e) {
+      const icon = actIcons[e.type] || '📌';
+      const repoName = e.repo ? e.repo.name.replace(`${USERNAME}/`, '') : '';
+      let desc = '';
+      switch (e.type) {
+        case 'PushEvent':
+          const commits = (e.payload.commits || []).slice(0, 3);
+          const msg = commits.map(c => c.message.split('\n')[0]).join(', ');
+          desc = `Pushed to <strong>${repoName}</strong>${msg ? ': ' + msg : ''}`; break;
+        case 'CreateEvent':
+          desc = `Created ${e.payload.ref_type} <strong>${e.payload.ref || repoName}</strong>`; break;
+        case 'IssuesEvent':
+          desc = `${e.payload.action === 'opened' ? 'Opened' : 'Closed'} issue #${e.payload.issue?.number} in <strong>${repoName}</strong>`; break;
+        case 'IssueCommentEvent':
+          desc = `Commented on issue #${e.payload.issue?.number} in <strong>${repoName}</strong>`; break;
+        case 'PullRequestEvent':
+          desc = `${e.payload.action === 'opened' ? 'Opened' : e.payload.action} PR #${e.payload.pull_request?.number} in <strong>${repoName}</strong>`; break;
+        case 'WatchEvent': desc = `Starred <strong>${repoName}</strong>`; break;
+        case 'ForkEvent': desc = `Forked <strong>${repoName}</strong>`; break;
+        case 'ReleaseEvent': desc = `Published ${e.payload.release?.tag_name} in <strong>${repoName}</strong>`; break;
+        default: desc = `Activity in <strong>${repoName}</strong>`;
+      }
+      const item = document.createElement('div');
+      item.className = 'activity-item glass';
+      item.innerHTML = `<span class="act-icon">${icon}</span><div class="act-body"><p>${desc}</p><span class="act-time">${timeAgo(e.created_at)}</span></div>`;
+      return item;
+    }
+
     // ===== LOAD GITHUB DATA =====
     async function loadGitHubData() {
       try {
-        const [user, repos, events] = await Promise.all([
+        const [user, repos] = await Promise.all([
           api(`/users/${USERNAME}`),
-          api(`/users/${USERNAME}/repos?per_page=100&sort=updated&direction=desc`),
-          api(`/users/${USERNAME}/events?per_page=10`)
+          api(`/users/${USERNAME}/repos?per_page=100&sort=updated&direction=desc`)
         ]);
 
         // --- Avatar ---
         const avatarEl = document.getElementById('heroAvatar');
-        if (user.avatar_url) {
-          avatarEl.src = user.avatar_url;
-        }
+        if (user.avatar_url) avatarEl.src = user.avatar_url;
 
         // --- Hero ---
-        const displayName = user.name || user.login;
-        document.getElementById('heroName').textContent = displayName;
+        document.getElementById('heroName').textContent = user.name || user.login;
         document.getElementById('heroStatus').textContent =
           user.hireable ? 'Open to opportunities' : (user.company || 'Building in public');
-
         const bioText = user.bio || 'Passionate about crafting code that blends creativity with technology.';
-        setTimeout(() => typeText(document.getElementById('heroBio'), bioText, 25), 500);
+        setTimeout(() => typeText(document.getElementById('heroBio'), bioText, 20), 400);
 
         // --- Stats ---
-        const totalStars = repos.reduce((sum, r) => sum + r.stargazers_count, 0);
         animateCounter(document.getElementById('statRepos'), repos.length);
-        animateCounter(document.getElementById('statStars'), totalStars);
+        animateCounter(document.getElementById('statStars'), repos.reduce((s, r) => s + r.stargazers_count, 0));
         animateCounter(document.getElementById('statFollowers'), user.followers);
 
-        // --- About bio ---
-        document.getElementById('aboutBio').textContent =
-          user.bio || 'Passionate developer who believes in building things that matter.';
+        // --- About ---
+        document.getElementById('aboutBio').textContent = user.bio || 'Passionate developer who believes in building things that matter.';
 
-        // --- Languages (skills) ---
+        // --- Languages / Skills ---
         const langCount = {};
-        repos.forEach(r => {
-          if (r.language) {
-            langCount[r.language] = (langCount[r.language] || 0) + 1;
-          }
-        });
-        const topLangs = Object.entries(langCount)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 12)
-          .map(([lang]) => lang);
-
+        repos.forEach(r => { if (r.language) langCount[r.language] = (langCount[r.language] || 0) + 1; });
+        const topLangs = Object.entries(langCount).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([l]) => l);
+        const skillColors = [
+          'linear-gradient(135deg, #ff0080, #ff8c00)', 'linear-gradient(135deg, #8a2be2, #00bfff)',
+          'linear-gradient(135deg, #00bfff, #00ff7f)', 'linear-gradient(135deg, #ff4500, #ffd700)',
+          'linear-gradient(135deg, #7b2ff7, #f7b731)', 'linear-gradient(135deg, #f0f, #0ff)',
+          'linear-gradient(135deg, #ff6348, #ffa502)', 'linear-gradient(135deg, #2ed573, #7bed9f)',
+          'linear-gradient(135deg, #e056fd, #686de0)', 'linear-gradient(135deg, #f9ca24, #f0932b)',
+          'linear-gradient(135deg, #a29bfe, #6c5ce7)', 'linear-gradient(135deg, #fd79a8, #e17055)',
+        ];
         const skillsGrid = document.getElementById('skillsGrid');
         skillsGrid.innerHTML = '';
-        const skillColors = [
-          'linear-gradient(135deg, #ff0080, #ff8c00)',
-          'linear-gradient(135deg, #8a2be2, #00bfff)',
-          'linear-gradient(135deg, #00bfff, #00ff7f)',
-          'linear-gradient(135deg, #ff4500, #ffd700)',
-          'linear-gradient(135deg, #7b2ff7, #f7b731)',
-          'linear-gradient(135deg, #f0f, #0ff)',
-          'linear-gradient(135deg, #ff6348, #ffa502)',
-          'linear-gradient(135deg, #2ed573, #7bed9f)',
-          'linear-gradient(135deg, #e056fd, #686de0)',
-          'linear-gradient(135deg, #f9ca24, #f0932b)',
-          'linear-gradient(135deg, #a29bfe, #6c5ce7)',
-          'linear-gradient(135deg, #fd79a8, #e17055)',
-        ];
         topLangs.forEach((lang, i) => {
-          const span = document.createElement('span');
-          span.className = 'skill-item';
-          span.textContent = `${getEmoji(lang)} ${lang}`;
-          span.style.background = skillColors[i % skillColors.length];
-          span.style.boxShadow = `0 4px 20px rgba(0,0,0,0.3)`;
-          skillsGrid.appendChild(span);
+          const s = document.createElement('span');
+          s.className = 'skill-item'; s.textContent = `${getEmoji(lang)} ${lang}`;
+          s.style.background = skillColors[i % skillColors.length];
+          skillsGrid.appendChild(s);
         });
 
-        // --- Projects ---
+        // --- Projects (show ALL non-fork repos) ---
         const grid = document.getElementById('projectsGrid');
         grid.innerHTML = '';
-        const shown = repos.filter(r => !r.fork && r.name !== `${USERNAME}.github.io`).slice(0, 12);
+        const shown = repos.filter(r => !r.fork && r.name !== `${USERNAME}.github.io`).slice(0, 30);
+        shown.forEach(r => grid.appendChild(makeProjectCard(r)));
 
         if (shown.length === 0) {
-          shown.push(...repos.filter(r => r.fork).slice(0, 6));
+          repos.filter(r => r.fork).slice(0, 6).forEach(r => grid.appendChild(makeProjectCard(r)));
         }
 
-        shown.forEach(r => {
-          const topics = (r.topics || []).slice(0, 4);
-          const tags = r.language ? [r.language, ...topics].slice(0, 4) : topics.slice(0, 3);
-          const iconUrl = getDeviconUrl(r.language);
-
-          const card = document.createElement('div');
-          card.className = 'project-card glass gradient-border';
-          card.innerHTML = `
-            <div class="content">
-              <div class="thumb">
-                ${iconUrl ? `<img class="lang-icon" src="${iconUrl}" alt="${r.language}" loading="lazy" />` : getEmoji(r.language)}
-                ${r.stargazers_count > 0 ? `<span class="star-badge">⭐ ${r.stargazers_count}</span>` : ''}
-                ${r.forks_count > 0 ? `<span class="star-badge" style="right:${r.stargazers_count > 0 ? '85px' : '12px'}">⑂ ${r.forks_count}</span>` : ''}
-              </div>
-              <h3>${r.name}</h3>
-              <p>${r.description || 'No description provided.'}</p>
-              <div class="project-tags">
-                ${tags.map(t => `<span>${t}</span>`).join('')}
-              </div>
-              <div class="project-links">
-                <a href="${r.html_url}" target="_blank">View on GitHub →</a>
-                ${r.homepage ? `<a href="${r.homepage}" target="_blank">Live Demo →</a>` : ''}
-              </div>
-            </div>
-          `;
-          grid.appendChild(card);
-        });
-
-        // --- Activity ---
-        const actGrid = document.getElementById('activityGrid');
-        actGrid.innerHTML = '';
-        const shownEvents = (events || []).slice(0, 8);
-        shownEvents.forEach(e => {
-          const icon = actIcons[e.type] || '📌';
-          const repoName = e.repo ? e.repo.name.replace(`${USERNAME}/`, '') : '';
-          let desc = '';
-
-          switch (e.type) {
-            case 'PushEvent':
-              const commits = (e.payload.commits || []).slice(0, 3);
-              const msg = commits.map(c => c.message.split('\n')[0]).join(', ');
-              desc = `Pushed to <strong>${repoName}</strong>${msg ? ': ' + msg : ''}`;
-              break;
-            case 'CreateEvent':
-              desc = `Created ${e.payload.ref_type} <strong>${e.payload.ref || repoName}</strong> in <strong>${repoName}</strong>`;
-              break;
-            case 'IssuesEvent':
-              desc = `${e.payload.action === 'opened' ? 'Opened' : 'Closed'} issue <strong>#${e.payload.issue?.number}</strong> in <strong>${repoName}</strong>`;
-              break;
-            case 'IssueCommentEvent':
-              desc = `Commented on issue <strong>#${e.payload.issue?.number}</strong> in <strong>${repoName}</strong>`;
-              break;
-            case 'PullRequestEvent':
-              desc = `${e.payload.action === 'opened' ? 'Opened' : e.payload.action} PR <strong>#${e.payload.pull_request?.number}</strong> in <strong>${repoName}</strong>`;
-              break;
-            case 'WatchEvent':
-              desc = `Starred <strong>${repoName}</strong>`;
-              break;
-            case 'ForkEvent':
-              desc = `Forked <strong>${repoName}</strong>`;
-              break;
-            case 'ReleaseEvent':
-              desc = `Published release <strong>${e.payload.release?.tag_name}</strong> in <strong>${repoName}</strong>`;
-              break;
-            default:
-              desc = `Activity in <strong>${repoName}</strong>`;
-          }
-
-          const item = document.createElement('div');
-          item.className = 'activity-item glass';
-          item.innerHTML = `
-            <span class="act-icon">${icon}</span>
-            <div class="act-body">
-              <p>${desc}</p>
-              <span class="act-time">${timeAgo(e.created_at)}</span>
-            </div>
-          `;
-          actGrid.appendChild(item);
-        });
-
-        if (shownEvents.length === 0) {
-          actGrid.innerHTML = '<p style="color:rgba(255,255,255,0.4);grid-column:1/-1;">No recent public activity.</p>';
-        }
-
-        // --- Contact email (if public) ---
+        // --- Contact email ---
         if (user.email) {
-          const emailLink = document.querySelector('a[href*="mailto"]');
-          if (emailLink) emailLink.href = `mailto:${user.email}`;
+          const el = document.querySelector('a[href*="mailto"]');
+          if (el) el.href = `mailto:${user.email}`;
         }
 
-        // --- Footer ---
-        const currentYear = new Date().getFullYear();
-        const footStrong = document.querySelector('footer strong');
-        if (footStrong) {
-          footStrong.insertAdjacentText('afterend', ` · © ${currentYear}`);
-        }
+        // --- Footer year ---
+        const yr = document.querySelector('footer strong');
+        if (yr) yr.insertAdjacentText('afterend', ` · © ${new Date().getFullYear()}`);
 
-        // --- Trigger reveal after data loaded ---
-        observeReveal([
-          ...document.querySelectorAll('.project-card, .activity-item, .about-card, .skill-item, .contact-card, .section-title, .section-tag')
-        ]);
+        // --- Reveal ---
+        observeReveal(document.querySelectorAll('.project-card, .about-card, .skill-item, .contact-card, .section-title, .section-tag'));
+
+        // --- Activity (non-blocking — won't break page if it fails) ---
+        api(`/users/${USERNAME}/events?per_page=10`).then(events => {
+          const actGrid = document.getElementById('activityGrid');
+          actGrid.innerHTML = '';
+          const evts = (events || []).slice(0, 8);
+          evts.forEach(e => actGrid.appendChild(makeActivityItem(e)));
+          if (evts.length === 0) actGrid.innerHTML = '<p style="color:rgba(255,255,255,0.4);grid-column:1/-1;">No recent public activity.</p>';
+          observeReveal(document.querySelectorAll('.activity-item'));
+        }).catch(() => {
+          document.getElementById('activityGrid').innerHTML = '<p style="color:rgba(255,255,255,0.4);grid-column:1/-1;">Activity unavailable right now.</p>';
+        });
 
       } catch (err) {
         console.error('GitHub API error:', err);
-        document.getElementById('heroBio').textContent =
-          '⚠️ Could not load GitHub data. Check back later!';
-        document.getElementById('aboutBio').textContent =
-          '⚠️ Could not load from GitHub. Using fallback data.';
+        document.getElementById('heroBio').textContent = '⚠️ Could not load GitHub data. Check back later!';
+        document.getElementById('aboutBio').textContent = '⚠️ Data unavailable. Please refresh.';
 
-        const fallback = [
-          { name: 'cahjul.github.io', description: 'Personal portfolio & GitHub Pages site', html_url: `https://github.com/${USERNAME}/${USERNAME}.github.io`, language: 'HTML' },
-        ];
         const grid = document.getElementById('projectsGrid');
         grid.innerHTML = '';
-        fallback.forEach(r => {
-          const card = document.createElement('div');
-          card.className = 'project-card glass gradient-border';
-          card.innerHTML = `
-            <div class="content">
-              <div class="thumb">📁</div>
-              <h3>${r.name}</h3>
-              <p>${r.description}</p>
-              <div class="project-tags">${r.language ? `<span>${r.language}</span>` : ''}</div>
-              <div class="project-links"><a href="${r.html_url}" target="_blank">View on GitHub →</a></div>
-            </div>
-          `;
-          grid.appendChild(card);
-        });
-
-        observeReveal([
-          ...document.querySelectorAll('.project-card, .about-card, .contact-card, .section-title, .section-tag')
-        ]);
+        const card = document.createElement('div');
+        card.className = 'project-card glass gradient-border';
+        card.innerHTML = `<div class="content"><div class="thumb">⚠️</div><h3>cahjul.github.io</h3><p>Portfolio site — GitHub API rate limited. Refresh later or add a token.</p><div class="project-tags"><span>HTML</span></div><div class="project-links"><a href="https://github.com/${USERNAME}/${USERNAME}.github.io" target="_blank">View on GitHub →</a></div></div>`;
+        grid.appendChild(card);
+        observeReveal(document.querySelectorAll('.project-card, .about-card, .contact-card, .section-title, .section-tag'));
       }
     }
 
