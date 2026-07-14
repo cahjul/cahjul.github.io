@@ -914,12 +914,27 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // ===== API FETCH =====
+    // ===== API FETCH (with pagination) =====
     async function api(path) {
       if (CACHE[path]) return CACHE[path];
       const res = await fetch(`https://api.github.com${path}`);
       const data = await res.json();
       CACHE[path] = data;
+
+      // Paginate: follow Link header if present
+      const link = res.headers.get('Link');
+      if (link && link.includes('rel="next"') && !path.includes('events')) {
+        const match = link.match(/<([^>]+)>\s*;\s*rel="next"/);
+        if (match) {
+          const nextPath = match[1].replace('https://api.github.com', '');
+          if (!CACHE[nextPath]) {
+            const nextData = await api(nextPath);
+            if (Array.isArray(data) && Array.isArray(nextData)) {
+              data.push(...nextData);
+            }
+          }
+        }
+      }
       return data;
     }
 
@@ -1058,10 +1073,11 @@
         <div class="content">
           <div class="thumb">
             ${iconUrl ? `<img class="lang-icon" src="${iconUrl}" alt="${r.language}" loading="lazy" />` : getEmoji(r.language)}
+            ${r.fork ? '<span class="star-badge" style="left:12px;right:auto;">🍴 Fork</span>' : ''}
             ${r.stargazers_count > 0 ? `<span class="star-badge">⭐ ${r.stargazers_count}</span>` : ''}
             ${r.forks_count > 0 ? `<span class="star-badge" style="right:${r.stargazers_count > 0 ? '85px' : '12px'}">⑂ ${r.forks_count}</span>` : ''}
           </div>
-          <h3>${r.name}</h3>
+          <h3>${r.fork ? '⑂ ' : ''}${r.name}</h3>
           <p>${r.description || 'No description provided.'}</p>
           <div class="project-tags">
             ${tags.map(t => `<span>${t}</span>`).join('')}
@@ -1151,11 +1167,32 @@
           skillsGrid.appendChild(s);
         });
 
-        // --- Projects (show ALL non-fork repos) ---
+        // --- Projects (paginated — handle 1000 repos) ---
         const grid = document.getElementById('projectsGrid');
         grid.innerHTML = '';
-        const shown = repos.filter(r => r.name !== `${USERNAME}.github.io`).slice(0, 30);
-        shown.forEach(r => grid.appendChild(makeProjectCard(r)));
+        let allRepos = repos.filter(r => r.name !== `${USERNAME}.github.io`);
+        let pageSize = 30;
+        let page = 0;
+
+        function renderPage() {
+          const batch = allRepos.slice(page * pageSize, (page + 1) * pageSize);
+          batch.forEach(r => grid.appendChild(makeProjectCard(r)));
+          page++;
+          if (page * pageSize >= allRepos.length && loadMoreBtn) {
+            loadMoreBtn.remove();
+            loadMoreBtn = null;
+          } else if (loadMoreBtn) {
+            loadMoreBtn.textContent = `Load more (${allRepos.length - page * pageSize} remaining)`;
+          }
+        }
+
+        let loadMoreBtn = document.createElement('div');
+        loadMoreBtn.style.cssText = 'grid-column:1/-1;text-align:center;margin-top:12px;';
+        loadMoreBtn.innerHTML = `<button class="btn btn-outline" style="padding:12px 40px;">Load more (${allRepos.length - pageSize} remaining) ↓</button>`;
+        loadMoreBtn.onclick = renderPage;
+
+        renderPage();
+        if (page * pageSize < allRepos.length) grid.after(loadMoreBtn);
 
         // --- Contact email ---
         if (user.email) {
