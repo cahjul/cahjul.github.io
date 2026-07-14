@@ -515,15 +515,13 @@
   <section id="hero">
     <div class="hero-badge">
       <span class="dot"></span>
-      Open to opportunities
+      <span id="heroStatus">Loading...</span>
     </div>
     <h1 class="hero-title">
-      Hi, I'm <span class="gradient">cahjul</span>
+      Hi, I'm <span class="gradient" id="heroName">cahjul</span>
     </h1>
-    <p class="hero-sub">
-      Building <strong style="color:#0ff;">modern</strong> &
-      <strong style="color:#f0f;">futuristic</strong> digital experiences.
-      Passionate about crafting code that blends creativity with technology.
+    <p class="hero-sub" id="heroBio">
+      Loading from GitHub...
     </p>
     <div class="hero-actions">
       <a href="#projects" class="btn btn-primary">See My Work ↴</a>
@@ -531,16 +529,16 @@
     </div>
     <div class="hero-stats">
       <div class="stat">
-        <div class="num" data-count="5">0</div>
-        <div class="label">Projects</div>
+        <div class="num" id="statRepos">0</div>
+        <div class="label">Repos</div>
       </div>
       <div class="stat">
-        <div class="num" data-count="3">0</div>
-        <div class="label">Years</div>
+        <div class="num" id="statStars">0</div>
+        <div class="label">Stars</div>
       </div>
       <div class="stat">
-        <div class="num" data-count="∞">∞</div>
-        <div class="label">Passion</div>
+        <div class="num" id="statFollowers">0</div>
+        <div class="label">Followers</div>
       </div>
     </div>
     <div class="scroll-indicator">
@@ -549,46 +547,40 @@
     </div>
   </section>
 
-  <!-- ===== ABOUT ===== -->
-  <section id="about">
-    <div class="about-text">
-      <span class="section-tag">About</span>
-      <h2 class="section-title">
-        Crafting code with <span class="gradient">purpose</span>
-      </h2>
-      <p>
-        I'm a developer who believes in building things that matter. From
-        sleek frontends to robust backends, I enjoy the entire spectrum of
-        software development.
-      </p>
-      <p>
-        Every project is an opportunity to learn something new and push
-        creative boundaries. Let's build something amazing together.
-      </p>
-    </div>
-    <div class="about-cards">
-      <div class="about-card glass">
-        <div class="icon">🎨</div>
-        <h4>Design</h4>
-        <p>Pixel-perfect, modern UI/UX</p>
+    <!-- ===== ABOUT ===== -->
+    <section id="about">
+      <div class="about-text">
+        <span class="section-tag">About</span>
+        <h2 class="section-title">
+          Crafting code with <span class="gradient">purpose</span>
+        </h2>
+        <p id="aboutBio">
+          Loading from GitHub...
+        </p>
       </div>
-      <div class="about-card glass">
-        <div class="icon">⚡</div>
-        <h4>Performance</h4>
-        <p>Fast, optimized, efficient</p>
+      <div class="about-cards">
+        <div class="about-card glass">
+          <div class="icon">🎨</div>
+          <h4>Design</h4>
+          <p>Pixel-perfect, modern UI/UX</p>
+        </div>
+        <div class="about-card glass">
+          <div class="icon">⚡</div>
+          <h4>Performance</h4>
+          <p>Fast, optimized, efficient</p>
+        </div>
+        <div class="about-card glass">
+          <div class="icon">🔧</div>
+          <h4>Engineering</h4>
+          <p>Clean, scalable code</p>
+        </div>
+        <div class="about-card glass">
+          <div class="icon">🌍</div>
+          <h4>Impact</h4>
+          <p>Solutions that matter</p>
+        </div>
       </div>
-      <div class="about-card glass">
-        <div class="icon">🔧</div>
-        <h4>Engineering</h4>
-        <p>Clean, scalable code</p>
-      </div>
-      <div class="about-card glass">
-        <div class="icon">🌍</div>
-        <h4>Impact</h4>
-        <p>Solutions that matter</p>
-      </div>
-    </div>
-  </section>
+    </section>
 
   <!-- ===== PROJECTS ===== -->
   <section id="projects">
@@ -607,16 +599,7 @@
     <span class="section-tag">Expertise</span>
     <h2 class="section-title">Tech <span class="gradient">Stack</span></h2>
     <div class="skills-grid" id="skillsGrid">
-      <span class="skill-item">JavaScript / TypeScript</span>
-      <span class="skill-item">React / Next.js</span>
-      <span class="skill-item">Node.js / Express</span>
-      <span class="skill-item">Python</span>
-      <span class="skill-item">Go</span>
-      <span class="skill-item">Rust</span>
-      <span class="skill-item">Docker / K8s</span>
-      <span class="skill-item">PostgreSQL</span>
-      <span class="skill-item">GraphQL</span>
-      <span class="skill-item">Tailwind / CSS</span>
+      <!-- populated from GitHub language data -->
     </div>
   </section>
 
@@ -649,6 +632,9 @@
   </footer>
 
   <script>
+    const USERNAME = 'cahjul';
+    const CACHE = {};
+
     // ===== PARTICLE BACKGROUND =====
     const canvas = document.getElementById('particles-canvas');
     const ctx = canvas.getContext('2d');
@@ -662,9 +648,7 @@
     window.addEventListener('resize', resizeCanvas);
 
     class Particle {
-      constructor() {
-        this.reset();
-      }
+      constructor() { this.reset(); }
       reset() {
         this.x = Math.random() * W;
         this.y = Math.random() * H;
@@ -679,8 +663,7 @@
         this.y += this.speedY;
         if (this.x < 0 || this.x > W) this.speedX *= -1;
         if (this.y < 0 || this.y > H) this.speedY *= -1;
-        this.opacity += (Math.random() - 0.5) * 0.006;
-        this.opacity = Math.max(0.1, Math.min(0.8, this.opacity));
+        this.opacity = Math.max(0.1, Math.min(0.8, this.opacity + (Math.random() - 0.5) * 0.006));
       }
       draw() {
         ctx.beginPath();
@@ -721,7 +704,6 @@
       ctx.clearRect(0, 0, W, H);
       particles.forEach(p => { p.update(); p.draw(); });
       drawLines();
-
       if (mouse.x !== null) {
         ctx.beginPath();
         ctx.arc(mouse.x, mouse.y, 60, 0, Math.PI * 2);
@@ -745,27 +727,27 @@
       });
     });
 
+    // ===== API FETCH =====
+    async function api(path) {
+      if (CACHE[path]) return CACHE[path];
+      const res = await fetch(`https://api.github.com${path}`);
+      const data = await res.json();
+      CACHE[path] = data;
+      return data;
+    }
+
     // ===== COUNTER ANIMATION =====
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const nums = entry.target.querySelectorAll('.num[data-count]');
-          nums.forEach(num => {
-            const target = parseInt(num.dataset.count);
-            if (isNaN(target)) return;
-            let current = 0;
-            const step = Math.ceil(target / 30);
-            const timer = setInterval(() => {
-              current += step;
-              if (current >= target) { current = target; clearInterval(timer); }
-              num.textContent = current;
-            }, 40);
-          });
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.5 });
-    document.querySelectorAll('#hero').forEach(el => observer.observe(el));
+    function animateCounter(el, target) {
+      const isNum = typeof target === 'number' && !isNaN(target);
+      if (!isNum) { el.textContent = target; return; }
+      let current = 0;
+      const step = Math.max(1, Math.ceil(target / 30));
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        el.textContent = current;
+      }, 40);
+    }
 
     // ===== SCROLL REVEAL =====
     const revealObserver = new IntersectionObserver(entries => {
@@ -778,42 +760,180 @@
       });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.project-card, .about-card, .skill-item, .contact-card, .section-title, .section-tag').forEach(el => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(30px)';
-      el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
-      revealObserver.observe(el);
-    });
+    function observeReveal(els) {
+      els.forEach(el => {
+        if (el) {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(30px)';
+          el.style.transition = 'opacity 0.7s ease, transform 0.7s ease';
+          revealObserver.observe(el);
+        }
+      });
+    }
 
-    // ===== DEMO PROJECTS =====
-    const projects = [
-      { emoji: '🤖', title: 'AI Chat App', desc: 'Real-time chat powered by AI with natural language understanding.', tags: ['React', 'Node.js', 'OpenAI'], url: '#' },
-      { emoji: '📊', title: 'Dashboard Kit', desc: 'Beautiful analytics dashboard with interactive charts and dark mode.', tags: ['Vue', 'D3.js', 'Tailwind'], url: '#' },
-      { emoji: '🛒', title: 'E-Commerce Platform', desc: 'Full-featured online store with payment integration and admin panel.', tags: ['Next.js', 'Stripe', 'PostgreSQL'], url: '#' },
-      { emoji: '🎮', title: 'Game Dev Tool', desc: 'Web-based game editor with drag & drop and real-time preview.', tags: ['TypeScript', 'Three.js', 'WebGL'], url: '#' },
-      { emoji: '🔐', title: 'Auth Service', desc: 'Secure authentication microservice with OAuth2 and MFA support.', tags: ['Go', 'JWT', 'Redis'], url: '#' },
-      { emoji: '📝', title: 'Markdown Editor', desc: 'Distraction-free Markdown editor with live preview and export.', tags: ['React', 'CodeMirror', 'PWA'], url: '#' },
-    ];
+    // ===== GITHUB EMOJI MAP =====
+    const langEmoji = {
+      javascript: '🟨', typescript: '🔵', python: '🐍', go: '🔷', rust: '🦀',
+      java: '☕', kotlin: '🟣', swift: '🟠', php: '🐘', ruby: '💎',
+      c: '⚙️', 'c++': '⚙️', 'c#': '🎯', html: '🌐', css: '🎨',
+      vue: '💚', dart: '🎯', scala: '🔴', lua: '🌙', r: '📊',
+      haskell: 'λ', elixir: '💜', clojure: '🌿', sql: '🗃️', dockerfile: '🐳',
+      shell: '💻', perl: '🐪', sass: '💅', markdown: '📝'
+    };
 
-    const grid = document.getElementById('projectsGrid');
-    projects.forEach(p => {
-      const card = document.createElement('div');
-      card.className = 'project-card glass';
-      card.innerHTML = `
-        <div class="content">
-          <div class="thumb">${p.emoji}</div>
-          <h3>${p.title}</h3>
-          <p>${p.desc}</p>
-          <div class="project-tags">
-            ${p.tags.map(t => `<span>${t}</span>`).join('')}
-          </div>
-          <div class="project-links">
-            <a href="${p.url}" target="_blank">View Project →</a>
-          </div>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
+    function getEmoji(lang) {
+      if (!lang) return '📁';
+      return langEmoji[lang.toLowerCase()] || '📄';
+    }
+
+    // ===== LOAD GITHUB DATA =====
+    async function loadGitHubData() {
+      try {
+        const [user, repos] = await Promise.all([
+          api(`/users/${USERNAME}`),
+          api(`/users/${USERNAME}/repos?per_page=100&sort=updated&direction=desc`)
+        ]);
+
+        // --- Hero ---
+        const displayName = user.name || user.login;
+        document.getElementById('heroName').textContent = displayName;
+        document.getElementById('heroStatus').textContent =
+          user.hireable ? 'Open to opportunities' : (user.company || 'Building in public');
+        document.getElementById('heroBio').textContent =
+          user.bio || 'Passionate about crafting code that blends creativity with technology.';
+
+        // --- Stats ---
+        const totalStars = repos.reduce((sum, r) => sum + r.stargazers_count, 0);
+        animateCounter(document.getElementById('statRepos'), repos.length);
+        animateCounter(document.getElementById('statStars'), totalStars);
+        animateCounter(document.getElementById('statFollowers'), user.followers);
+
+        // --- About bio ---
+        document.getElementById('aboutBio').textContent =
+          user.bio || 'Passionate developer who believes in building things that matter.';
+
+        // --- Languages (skills) ---
+        const langCount = {};
+        repos.forEach(r => {
+          if (r.language) {
+            langCount[r.language] = (langCount[r.language] || 0) + 1;
+          }
+        });
+        const topLangs = Object.entries(langCount)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 12)
+          .map(([lang]) => lang);
+
+        const skillsGrid = document.getElementById('skillsGrid');
+        const skillColors = [
+          'linear-gradient(135deg, #ff0080, #ff8c00)',
+          'linear-gradient(135deg, #8a2be2, #00bfff)',
+          'linear-gradient(135deg, #00bfff, #00ff7f)',
+          'linear-gradient(135deg, #ff4500, #ffd700)',
+          'linear-gradient(135deg, #7b2ff7, #f7b731)',
+          'linear-gradient(135deg, #f0f, #0ff)',
+          'linear-gradient(135deg, #ff6348, #ffa502)',
+          'linear-gradient(135deg, #2ed573, #7bed9f)',
+          'linear-gradient(135deg, #e056fd, #686de0)',
+          'linear-gradient(135deg, #f9ca24, #f0932b)',
+          'linear-gradient(135deg, #a29bfe, #6c5ce7)',
+          'linear-gradient(135deg, #fd79a8, #e17055)',
+        ];
+        topLangs.forEach((lang, i) => {
+          const span = document.createElement('span');
+          span.className = 'skill-item';
+          span.textContent = `${getEmoji(lang)} ${lang}`;
+          span.style.background = skillColors[i % skillColors.length];
+          span.style.boxShadow = `0 4px 20px rgba(0,0,0,0.3)`;
+          skillsGrid.appendChild(span);
+        });
+
+        // --- Projects ---
+        const grid = document.getElementById('projectsGrid');
+        const shown = repos.filter(r => !r.fork).slice(0, 12);
+
+        if (shown.length === 0) {
+          shown.push(...repos.filter(r => r.fork).slice(0, 6));
+        }
+
+        shown.forEach(r => {
+          const topics = (r.topics || []).slice(0, 4);
+          const tags = r.language ? [r.language, ...topics].slice(0, 4) : topics.slice(0, 3);
+
+          const card = document.createElement('div');
+          card.className = 'project-card glass';
+          card.innerHTML = `
+            <div class="content">
+              <div class="thumb">
+                ${r.language ? getEmoji(r.language) : '📁'}
+                ${r.stargazers_count > 0 ? `<span style="position:absolute;top:12px;right:12px;font-size:0.8rem;background:rgba(0,0,0,0.4);padding:4px 12px;border-radius:50px;">⭐ ${r.stargazers_count}</span>` : ''}
+              </div>
+              <h3>${r.name}</h3>
+              <p>${r.description || 'No description provided.'}</p>
+              <div class="project-tags">
+                ${tags.map(t => `<span>${t}</span>`).join('')}
+              </div>
+              <div class="project-links">
+                <a href="${r.html_url}" target="_blank">View on GitHub →</a>
+                ${r.homepage ? `<a href="${r.homepage}" target="_blank">Live Demo →</a>` : ''}
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        // --- Contact email (if public) ---
+        if (user.email) {
+          const emailLink = document.querySelector('a[href*="mailto"]');
+          if (emailLink) emailLink.href = `mailto:${user.email}`;
+        }
+
+        // --- Footer ---
+        const footYear = document.querySelector('footer strong');
+        if (footYear) {
+          const currentYear = new Date().getFullYear();
+          footYear.insertAdjacentText('afterend', ` · © ${currentYear}`);
+        }
+
+        // --- Trigger reveal after data loaded ---
+        observeReveal([
+          ...document.querySelectorAll('.project-card, .about-card, .skill-item, .contact-card, .section-title, .section-tag')
+        ]);
+
+      } catch (err) {
+        console.error('GitHub API error:', err);
+        document.getElementById('heroBio').textContent =
+          '⚠️ Could not load GitHub data. Check back later!';
+        document.getElementById('aboutBio').textContent =
+          '⚠️ Could not load from GitHub. Using fallback data.';
+
+        // Fallback: show demo projects
+        const fallback = [
+          { name: 'cahjul.github.io', description: 'Personal portfolio & GitHub Pages site', html_url: `https://github.com/${USERNAME}/${USERNAME}.github.io`, language: 'HTML' },
+        ];
+        const grid = document.getElementById('projectsGrid');
+        fallback.forEach(r => {
+          const card = document.createElement('div');
+          card.className = 'project-card glass';
+          card.innerHTML = `
+            <div class="content">
+              <div class="thumb">📁</div>
+              <h3>${r.name}</h3>
+              <p>${r.description}</p>
+              <div class="project-tags">${r.language ? `<span>${r.language}</span>` : ''}</div>
+              <div class="project-links"><a href="${r.html_url}" target="_blank">View on GitHub →</a></div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        observeReveal([
+          ...document.querySelectorAll('.project-card, .about-card, .contact-card, .section-title, .section-tag')
+        ]);
+      }
+    }
+
+    loadGitHubData();
   </script>
 </body>
 </html>
