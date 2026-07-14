@@ -1154,12 +1154,8 @@
         // --- Projects (show ALL non-fork repos) ---
         const grid = document.getElementById('projectsGrid');
         grid.innerHTML = '';
-        const shown = repos.filter(r => !r.fork && r.name !== `${USERNAME}.github.io`).slice(0, 30);
+        const shown = repos.filter(r => r.name !== `${USERNAME}.github.io`).slice(0, 30);
         shown.forEach(r => grid.appendChild(makeProjectCard(r)));
-
-        if (shown.length === 0) {
-          repos.filter(r => r.fork).slice(0, 6).forEach(r => grid.appendChild(makeProjectCard(r)));
-        }
 
         // --- Contact email ---
         if (user.email) {
