@@ -434,6 +434,164 @@
     .skill-item:nth-child(9) { background: linear-gradient(135deg, #e056fd, #686de0); box-shadow: 0 4px 20px rgba(224,86,253,0.3); }
     .skill-item:nth-child(10) { background: linear-gradient(135deg, #f9ca24, #f0932b); box-shadow: 0 4px 20px rgba(249,202,36,0.3); }
 
+    /* ===== AVATAR ===== */
+    .hero-avatar {
+      width: 130px; height: 130px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      background: linear-gradient(135deg, #f0f, #0ff, #ff0, #f0f) border-box;
+      background-size: 300% 300%;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: gradient-shift 4s ease infinite;
+      margin-bottom: 24px;
+      object-fit: cover;
+      animation: float 4s ease-in-out infinite, pulse-glow 3s infinite;
+    }
+
+    /* ===== TYPING CURSOR ===== */
+    .typing-cursor::after {
+      content: '|';
+      animation: blink 1s step-end infinite;
+      color: #0ff;
+      font-weight: 100;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ===== GRADIENT BORDER CARDS ===== */
+    .gradient-border {
+      position: relative;
+      background: rgba(255,255,255,0.04);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .gradient-border::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(135deg, transparent 20%, rgba(255,0,255,0.2), rgba(0,255,255,0.2), transparent 80%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      opacity: 0.3;
+    }
+    .gradient-border:hover::before { opacity: 1; }
+
+    /* ===== BACK TO TOP ===== */
+    #backToTop {
+      position: fixed;
+      bottom: 32px; right: 32px;
+      z-index: 99;
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #f0f, #0ff);
+      color: #0b0b1a;
+      font-size: 1.4rem;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.4s, transform 0.4s, box-shadow 0.3s;
+      box-shadow: 0 4px 20px rgba(255,0,255,0.3);
+      pointer-events: none;
+    }
+    #backToTop.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    #backToTop:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 40px rgba(0,255,255,0.5);
+    }
+
+    /* ===== PROJECT THUMB LANG ===== */
+    .project-card .thumb {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 180px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,0,255,0.08), rgba(0,255,255,0.08));
+    }
+    .project-card .thumb img.lang-icon {
+      width: 56px; height: 56px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 12px rgba(255,255,255,0.15));
+    }
+    .project-card .thumb .star-badge {
+      position: absolute;
+      top: 12px; right: 12px;
+      font-size: 0.75rem;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* ===== SKELETON LOADING ===== */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+    }
+    .skeleton-card {
+      height: 320px;
+      border-radius: 20px;
+    }
+    .skeleton-text { height: 16px; margin-bottom: 12px; width: 80%; }
+    .skeleton-text.short { width: 50%; }
+    .skeleton-text.long { width: 95%; }
+
+    /* ===== ACTIVITY SECTION ===== */
+    #activity { text-align: center; }
+    .activity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 48px;
+      text-align: left;
+    }
+    .activity-item {
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .activity-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 30px rgba(0,255,255,0.08);
+    }
+    .activity-item .act-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+    .activity-item .act-body { flex: 1; min-width: 0; }
+    .activity-item .act-body p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+    .activity-item .act-body p strong { color: #e0e0f0; }
+    .activity-item .act-time {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.25);
+      margin-top: 4px;
+      display: block;
+    }
+    .activity-item .act-body a {
+      color: #0ff;
+    }
+    .activity-item .act-body a:hover { text-shadow: 0 0 12px rgba(0,255,255,0.4); }
+
     /* ===== CONTACT ===== */
     #contact { text-align: center; }
     .contact-links {
@@ -490,6 +648,8 @@
       .about-cards { grid-template-columns: 1fr; }
       .hero-stats { gap: 24px; flex-wrap: wrap; justify-content: center; }
       .section-title { font-size: 1.8rem; }
+      #backToTop { bottom: 20px; right: 20px; width: 44px; height: 44px; font-size: 1.2rem; }
+      .activity-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -513,6 +673,7 @@
 
   <!-- ===== HERO ===== -->
   <section id="hero">
+    <img id="heroAvatar" class="hero-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='130' viewBox='0 0 130 130'%3E%3Crect fill='%230b0b1a' width='130' height='130'/%3E%3Ctext x='65' y='75' font-size='50' text-anchor='middle' fill='%23e0e0f0'%3E🚀%3C/text%3E%3C/svg%3E" alt="avatar" />
     <div class="hero-badge">
       <span class="dot"></span>
       <span id="heroStatus">Loading...</span>
@@ -603,6 +764,15 @@
     </div>
   </section>
 
+  <!-- ===== ACTIVITY ===== -->
+  <section id="activity">
+    <span class="section-tag">Timeline</span>
+    <h2 class="section-title">Latest <span class="gradient">Activity</span></h2>
+    <div class="activity-grid" id="activityGrid">
+      <p style="color:rgba(255,255,255,0.4);grid-column:1/-1;">Loading recent activity...</p>
+    </div>
+  </section>
+
   <!-- ===== CONTACT ===== -->
   <section id="contact">
     <span class="section-tag">Connect</span>
@@ -626,9 +796,12 @@
     </div>
   </section>
 
+  <!-- ===== BACK TO TOP ===== -->
+  <button id="backToTop" aria-label="Back to top">↑</button>
+
   <!-- ===== FOOTER ===== -->
   <footer>
-    <p>Built with <span class="heart">♥</span> by <strong>cahjul</strong> · © 2026</p>
+    <p>Built with <span class="heart">♥</span> by <strong>cahjul</strong></p>
   </footer>
 
   <script>
@@ -727,6 +900,15 @@
       });
     });
 
+    // ===== BACK TO TOP =====
+    const backBtn = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+      backBtn.classList.toggle('show', window.scrollY > 400);
+    });
+    backBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
     // ===== API FETCH =====
     async function api(path) {
       if (CACHE[path]) return CACHE[path];
@@ -771,7 +953,60 @@
       });
     }
 
-    // ===== GITHUB EMOJI MAP =====
+    // ===== TYPING ANIMATION =====
+    function typeText(el, text, speed) {
+      el.textContent = '';
+      el.classList.add('typing-cursor');
+      let i = 0;
+      function tick() {
+        if (i < text.length) {
+          el.textContent += text[i++];
+          setTimeout(tick, speed);
+        } else {
+          el.classList.remove('typing-cursor');
+          el.textContent = text;
+        }
+      }
+      tick();
+    }
+
+    // ===== DEVICON MAP =====
+    const deviconMap = {
+      javascript: 'javascript/javascript-original.svg',
+      typescript: 'typescript/typescript-original.svg',
+      python: 'python/python-original.svg',
+      go: 'go/go-original.svg',
+      rust: 'rust/rust-plain.svg',
+      java: 'java/java-original.svg',
+      kotlin: 'kotlin/kotlin-original.svg',
+      swift: 'swift/swift-original.svg',
+      php: 'php/php-original.svg',
+      ruby: 'ruby/ruby-original.svg',
+      c: 'c/c-original.svg',
+      'c++': 'cplusplus/cplusplus-original.svg',
+      'c#': 'csharp/csharp-original.svg',
+      html: 'html5/html5-original.svg',
+      css: 'css3/css3-original.svg',
+      vue: 'vuejs/vuejs-original.svg',
+      dart: 'dart/dart-original.svg',
+      scala: 'scala/scala-original.svg',
+      lua: 'lua/lua-original.svg',
+      r: 'r/r-original.svg',
+      haskell: 'haskell/haskell-original.svg',
+      elixir: 'elixir/elixir-original.svg',
+      dockerfile: 'docker/docker-original.svg',
+      shell: 'bash/bash-original.svg',
+      sass: 'sass/sass-original.svg',
+      markdown: 'markdown/markdown-original.svg',
+    };
+
+    function getDeviconUrl(lang) {
+      if (!lang) return null;
+      const key = lang.toLowerCase();
+      const path = deviconMap[key];
+      return path ? `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${path}` : null;
+    }
+
     const langEmoji = {
       javascript: '🟨', typescript: '🔵', python: '🐍', go: '🔷', rust: '🦀',
       java: '☕', kotlin: '🟣', swift: '🟠', php: '🐘', ruby: '💎',
@@ -786,21 +1021,50 @@
       return langEmoji[lang.toLowerCase()] || '📄';
     }
 
+    // ===== TIME AGO =====
+    function timeAgo(date) {
+      const diff = Date.now() - new Date(date).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      const days = Math.floor(hrs / 24);
+      if (days < 30) return `${days}d ago`;
+      return new Date(date).toLocaleDateString();
+    }
+
+    // ===== ACTIVITY ICONS =====
+    const actIcons = {
+      PushEvent: '📤', CreateEvent: '🌟', IssuesEvent: '🐛', IssueCommentEvent: '💬',
+      PullRequestEvent: '🔀', PullRequestReviewEvent: '👀', WatchEvent: '⭐',
+      ForkEvent: '🍴', ReleaseEvent: '📦', DeleteEvent: '🗑️', MemberEvent: '👤',
+      PublicEvent: '🎉', GollumEvent: '📖',
+    };
+
     // ===== LOAD GITHUB DATA =====
     async function loadGitHubData() {
       try {
-        const [user, repos] = await Promise.all([
+        const [user, repos, events] = await Promise.all([
           api(`/users/${USERNAME}`),
-          api(`/users/${USERNAME}/repos?per_page=100&sort=updated&direction=desc`)
+          api(`/users/${USERNAME}/repos?per_page=100&sort=updated&direction=desc`),
+          api(`/users/${USERNAME}/events?per_page=10`)
         ]);
+
+        // --- Avatar ---
+        const avatarEl = document.getElementById('heroAvatar');
+        if (user.avatar_url) {
+          avatarEl.src = user.avatar_url;
+        }
 
         // --- Hero ---
         const displayName = user.name || user.login;
         document.getElementById('heroName').textContent = displayName;
         document.getElementById('heroStatus').textContent =
           user.hireable ? 'Open to opportunities' : (user.company || 'Building in public');
-        document.getElementById('heroBio').textContent =
-          user.bio || 'Passionate about crafting code that blends creativity with technology.';
+
+        const bioText = user.bio || 'Passionate about crafting code that blends creativity with technology.';
+        setTimeout(() => typeText(document.getElementById('heroBio'), bioText, 25), 500);
 
         // --- Stats ---
         const totalStars = repos.reduce((sum, r) => sum + r.stargazers_count, 0);
@@ -825,6 +1089,7 @@
           .map(([lang]) => lang);
 
         const skillsGrid = document.getElementById('skillsGrid');
+        skillsGrid.innerHTML = '';
         const skillColors = [
           'linear-gradient(135deg, #ff0080, #ff8c00)',
           'linear-gradient(135deg, #8a2be2, #00bfff)',
@@ -850,7 +1115,8 @@
 
         // --- Projects ---
         const grid = document.getElementById('projectsGrid');
-        const shown = repos.filter(r => !r.fork).slice(0, 12);
+        grid.innerHTML = '';
+        const shown = repos.filter(r => !r.fork && r.name !== `${USERNAME}.github.io`).slice(0, 12);
 
         if (shown.length === 0) {
           shown.push(...repos.filter(r => r.fork).slice(0, 6));
@@ -859,14 +1125,16 @@
         shown.forEach(r => {
           const topics = (r.topics || []).slice(0, 4);
           const tags = r.language ? [r.language, ...topics].slice(0, 4) : topics.slice(0, 3);
+          const iconUrl = getDeviconUrl(r.language);
 
           const card = document.createElement('div');
-          card.className = 'project-card glass';
+          card.className = 'project-card glass gradient-border';
           card.innerHTML = `
             <div class="content">
               <div class="thumb">
-                ${r.language ? getEmoji(r.language) : '📁'}
-                ${r.stargazers_count > 0 ? `<span style="position:absolute;top:12px;right:12px;font-size:0.8rem;background:rgba(0,0,0,0.4);padding:4px 12px;border-radius:50px;">⭐ ${r.stargazers_count}</span>` : ''}
+                ${iconUrl ? `<img class="lang-icon" src="${iconUrl}" alt="${r.language}" loading="lazy" />` : getEmoji(r.language)}
+                ${r.stargazers_count > 0 ? `<span class="star-badge">⭐ ${r.stargazers_count}</span>` : ''}
+                ${r.forks_count > 0 ? `<span class="star-badge" style="right:${r.stargazers_count > 0 ? '85px' : '12px'}">⑂ ${r.forks_count}</span>` : ''}
               </div>
               <h3>${r.name}</h3>
               <p>${r.description || 'No description provided.'}</p>
@@ -882,6 +1150,62 @@
           grid.appendChild(card);
         });
 
+        // --- Activity ---
+        const actGrid = document.getElementById('activityGrid');
+        actGrid.innerHTML = '';
+        const shownEvents = (events || []).slice(0, 8);
+        shownEvents.forEach(e => {
+          const icon = actIcons[e.type] || '📌';
+          const repoName = e.repo ? e.repo.name.replace(`${USERNAME}/`, '') : '';
+          let desc = '';
+
+          switch (e.type) {
+            case 'PushEvent':
+              const commits = (e.payload.commits || []).slice(0, 3);
+              const msg = commits.map(c => c.message.split('\n')[0]).join(', ');
+              desc = `Pushed to <strong>${repoName}</strong>${msg ? ': ' + msg : ''}`;
+              break;
+            case 'CreateEvent':
+              desc = `Created ${e.payload.ref_type} <strong>${e.payload.ref || repoName}</strong> in <strong>${repoName}</strong>`;
+              break;
+            case 'IssuesEvent':
+              desc = `${e.payload.action === 'opened' ? 'Opened' : 'Closed'} issue <strong>#${e.payload.issue?.number}</strong> in <strong>${repoName}</strong>`;
+              break;
+            case 'IssueCommentEvent':
+              desc = `Commented on issue <strong>#${e.payload.issue?.number}</strong> in <strong>${repoName}</strong>`;
+              break;
+            case 'PullRequestEvent':
+              desc = `${e.payload.action === 'opened' ? 'Opened' : e.payload.action} PR <strong>#${e.payload.pull_request?.number}</strong> in <strong>${repoName}</strong>`;
+              break;
+            case 'WatchEvent':
+              desc = `Starred <strong>${repoName}</strong>`;
+              break;
+            case 'ForkEvent':
+              desc = `Forked <strong>${repoName}</strong>`;
+              break;
+            case 'ReleaseEvent':
+              desc = `Published release <strong>${e.payload.release?.tag_name}</strong> in <strong>${repoName}</strong>`;
+              break;
+            default:
+              desc = `Activity in <strong>${repoName}</strong>`;
+          }
+
+          const item = document.createElement('div');
+          item.className = 'activity-item glass';
+          item.innerHTML = `
+            <span class="act-icon">${icon}</span>
+            <div class="act-body">
+              <p>${desc}</p>
+              <span class="act-time">${timeAgo(e.created_at)}</span>
+            </div>
+          `;
+          actGrid.appendChild(item);
+        });
+
+        if (shownEvents.length === 0) {
+          actGrid.innerHTML = '<p style="color:rgba(255,255,255,0.4);grid-column:1/-1;">No recent public activity.</p>';
+        }
+
         // --- Contact email (if public) ---
         if (user.email) {
           const emailLink = document.querySelector('a[href*="mailto"]');
@@ -889,15 +1213,15 @@
         }
 
         // --- Footer ---
-        const footYear = document.querySelector('footer strong');
-        if (footYear) {
-          const currentYear = new Date().getFullYear();
-          footYear.insertAdjacentText('afterend', ` · © ${currentYear}`);
+        const currentYear = new Date().getFullYear();
+        const footStrong = document.querySelector('footer strong');
+        if (footStrong) {
+          footStrong.insertAdjacentText('afterend', ` · © ${currentYear}`);
         }
 
         // --- Trigger reveal after data loaded ---
         observeReveal([
-          ...document.querySelectorAll('.project-card, .about-card, .skill-item, .contact-card, .section-title, .section-tag')
+          ...document.querySelectorAll('.project-card, .activity-item, .about-card, .skill-item, .contact-card, .section-title, .section-tag')
         ]);
 
       } catch (err) {
@@ -907,14 +1231,14 @@
         document.getElementById('aboutBio').textContent =
           '⚠️ Could not load from GitHub. Using fallback data.';
 
-        // Fallback: show demo projects
         const fallback = [
           { name: 'cahjul.github.io', description: 'Personal portfolio & GitHub Pages site', html_url: `https://github.com/${USERNAME}/${USERNAME}.github.io`, language: 'HTML' },
         ];
         const grid = document.getElementById('projectsGrid');
+        grid.innerHTML = '';
         fallback.forEach(r => {
           const card = document.createElement('div');
-          card.className = 'project-card glass';
+          card.className = 'project-card glass gradient-border';
           card.innerHTML = `
             <div class="content">
               <div class="thumb">📁</div>
